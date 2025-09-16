@@ -1,0 +1,36 @@
+a (any opreation) b -> c -> func(c) -> output(loss)
+
+a + b = c 
+
+dc/da = 1
+dc/db = 1
+
+dL/da = dL/dc * dc/da = dL/dc * 1 
+dL/db = dL/dc * dc/db = dL/dc * 1
+
+a - b = c
+
+dc/da = 1
+dc/db = -1
+
+dL/da = dL/dc * dc/da = dL/dc * 1
+dL/db = dL/dc * dc/db = dL/dc * -1
+
+a * b = c
+
+dc/da = b
+dc/db = a
+
+dL/da = dL/dc * dc/da = dL/dc * b
+dL/db = ??
+
+a ^ b = c
+dc/da = b * a^(b-1)
+
+a/b = a* (b^-1) = c
+dc/da = b^-1 = 1/b
+dc/db = ??
+dL/da = ??
+dL/db = ??
+mathematical opreations are of 4 types -> + , - , * and /
+
