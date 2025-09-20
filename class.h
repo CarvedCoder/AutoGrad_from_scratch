@@ -1,3 +1,5 @@
+#ifndef CLASS_H
+#define CLASS_H 
 #include <iostream>
 #include <memory>
 #include <ostream>
@@ -14,8 +16,9 @@ private:
     inline static int next_id = 0;
     inline static std::unordered_map<int, std::weak_ptr<Node>> registry;
     std::vector<int> prev;
+    double grad=0.0;
 private:
-    Node(double data , const std::string &op) : data(data),op(op), id(next_id++){}
+    Node(double data , const std::string &op) : data(data),op(op), grad(0.0),id(next_id++){}
 public:
     using Nodeptr = std::shared_ptr<Node>;
     static Nodeptr CreateNode(double data,const std::string &op= "input"){
@@ -39,85 +42,9 @@ public:
         topoDfs(root, seen, order);
         return order;
     }
-
-static void forward(const std::vector<int>&order){
-    for(auto n:order){ 
-        auto node = GetNode(n);
-        if (!node){
-            std::cerr << "Node corruption (nullptr returned)" << std::endl;
-            return;
-        }
-        auto parents = node->GetParents();
-        if (node->GetOp() == "input") {continue;}
-        else if (node->GetOp() == "+"){
-            double result=0.0;
-            for(auto pid : parents){
-                auto parent = GetNode(pid);
-                if (!parent) {
-                    std::cerr << "Parent node " << pid << " not found" << std::endl;
-                    return;
-                }
-                result += parent->GetData();
-            }
-            node->SetData(result);
-        }
-        else if (node->GetOp() == "-"){
-            if (parents.size() < 2) {
-                std::cerr << "Less than 2 parents for diff" << std::endl;
-                return;
-            }
-            auto parent1 = GetNode(parents[0]);
-            auto parent2 = GetNode(parents[1]);
-            if (!parent1 || !parent2) {
-                std::cerr << "Parent nodes not found for subtraction" << std::endl;
-                return;
-            }
-            double result = parent1->GetData() - parent2->GetData();
-            node->SetData(result);
-        }
-        else if (node->GetOp() == "*"){
-            double result=1.0;
-            for(auto pid : parents){
-                auto parent = GetNode(pid);
-                if (!parent) {
-                    std::cerr << "Parent node " << pid << " not found" << std::endl;
-                    return;
-                }
-                result *= parent->GetData();
-            }
-            node->SetData(result);
-        }
-        else if (node->GetOp() == "/"){
-            if (parents.size() < 2) {
-                std::cerr << "Less than 2 parents for div" << std::endl;
-                return;
-            }
-            auto parent1 = GetNode(parents[0]);
-            auto parent2 = GetNode(parents[1]);
-            if (!parent1 || !parent2) {
-                std::cerr << "Parent nodes not found for division" << std::endl;
-                return;
-            }
-            double result = parent1->GetData() / parent2->GetData();
-            node->SetData(result);
-        }
-        else if (node->GetOp() == "negate"){
-            if (parents.empty()) {
-                std::cerr << "No parent for negate operation" << std::endl;
-                return;
-            }
-            auto parent = GetNode(parents[0]);
-            if (!parent) {
-                std::cerr << "Parent node not found for negate" << std::endl;
-                return;
-            }
-            node->SetData(-parent->GetData());                 
-        }
-    }
-}
-
     void addParent(const int pid){prev.push_back(pid);}
     double GetData(){return data;}
+    double GetGrad(){return grad;}
     std::string GetOp(){return op;}
     int GetId(){return id;}
     std::vector<int> GetParents()const {return prev;} 
@@ -129,7 +56,10 @@ static void forward(const std::vector<int>&order){
         }
         return nullptr;
     }
+    void setGrad(const double new_grad){grad = new_grad;}
     void SetData(const double new_data){data=new_data;}
+    void AddGrad(const double new_grad){grad += new_grad;}
+    void ZeroGrad(){grad=0.0;}
 };
 
 namespace NodeOps {
@@ -162,7 +92,32 @@ namespace NodeOps {
         result->addParent(x->GetId());
         return result;
     }
+    static Node::Nodeptr node_pow(const Node::Nodeptr&x1,const Node::Nodeptr&x2){
+        auto result = Node::CreateNode(0.0,"pow");
+        result->addParent(x1->GetId());
+        result->addParent(x2->GetId());
+        return result;
+    }
+    static Node::Nodeptr node_pow(const Node::Nodeptr& x,double y){
+        auto result = Node::CreateNode(0.0,"pow_"+std::to_string(y));
+        result->addParent(x->GetId());
+        return result;
+    }
+    static Node::Nodeptr node_exp(const Node::Nodeptr&x){
+        auto result = Node::CreateNode(0.0,"exp");
+        result->addParent(x->GetId());
+        return result;
+    }
+    static Node::Nodeptr node_log(const Node::Nodeptr&x){
+        auto result = Node::CreateNode(0.0,"log");
+        result->addParent(x->GetId());
+        return result;
+    }
+    static Node::Nodeptr node_sqrt(const Node::Nodeptr&x){
+        auto result = Node::CreateNode(0.0,"sqrt");
+        result->addParent(x->GetId());
+        return result;
+    }
 }
-
-
+#endif // CLASS_H
 
