@@ -1,6 +1,6 @@
 #ifndef BACKWARD_H
 #define BACKWARD_H
-#include "class.h"
+#include "node.h"
 #include <algorithm>
 #include <cmath>
 #include <iostream>

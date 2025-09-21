@@ -1,5 +1,6 @@
 #ifndef CLASS_H
 #define CLASS_H 
+#include "tensor.h"
 #include <iostream>
 #include <memory>
 #include <ostream>
@@ -25,7 +26,7 @@ public:
         auto node = Nodeptr (new Node(data,op));
         registry[node->id] = node; 
         return node;
-    } 
+    }
 
     static void topoDfs(const Nodeptr& node,std::unordered_set<int>&seen,std::vector<int>&order){
         if(!node || seen.count(node->id)){return;}

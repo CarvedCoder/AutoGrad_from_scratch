@@ -1,11 +1,12 @@
 #include <iostream>
+#include <ostream>
 #include <vector>
 #include <iomanip>
 #include <cmath>
-#include "class.h"
+#include "node.h"
 #include "forward.h"
 #include "backward.h"
-
+#include "tensor.h"
 void testBasicOperations() {
     using namespace NodeOps;
     std::cout << "=== Testing Basic Operations ===" << std::endl;
@@ -211,35 +212,46 @@ void testChainRule() {
 int main() {
     std::cout << std::fixed << std::setprecision(6);
     
-    testBasicOperations();
-    testUnaryOperations();
-    testPowerOperations();
-    testComplexExpression();
-    testChainRule();
+    // testBasicOperations();
+    // testUnaryOperations();
+    // testPowerOperations();
+    // testComplexExpression();
+    // testChainRule();
+    // 
+    // std::cout << "=== Original Test Case ===" << std::endl;
+    // using namespace NodeOps;
+    // 
+    // auto a1 = Node::CreateNode(3.14);
+    // auto a2 = Node::CreateNode(1.12);
+    // auto b1 = a1 + a2;
+    // auto b2 = Node::CreateNode(2.33);
+    // auto c1 = b1 - b2;
+    // auto c3 = Node::CreateNode(1.13);
+    // auto d1 = c3 * c1;
+    // auto d2 = Node::CreateNode(1.18);
+    // auto e = d1 / d2;
+    // auto neg_e = -e;
+    // 
+    // auto order = Node::topoSort(neg_e);
+    // 
+    // forward(order);
+    // std::cout << "Forward pass completed" << std::endl;
+    // std::cout << "Final result: " << neg_e->GetData() << std::endl;
+    // 
+    // backward(order);
+    // std::cout << "Backward pass completed" << std::endl;
+    // std::cout << "Gradient of a1: " << a1->GetGrad() << std::endl;
     
-    std::cout << "=== Original Test Case ===" << std::endl;
-    using namespace NodeOps;
-    
-    auto a1 = Node::CreateNode(3.14);
-    auto a2 = Node::CreateNode(1.12);
-    auto b1 = a1 + a2;
-    auto b2 = Node::CreateNode(2.33);
-    auto c1 = b1 - b2;
-    auto c3 = Node::CreateNode(1.13);
-    auto d1 = c3 * c1;
-    auto d2 = Node::CreateNode(1.18);
-    auto e = d1 / d2;
-    auto neg_e = -e;
-    
-    auto order = Node::topoSort(neg_e);
-    
-    forward(order);
-    std::cout << "Forward pass completed" << std::endl;
-    std::cout << "Final result: " << neg_e->GetData() << std::endl;
-    
-    backward(order);
-    std::cout << "Backward pass completed" << std::endl;
-    std::cout << "Gradient of a1: " << a1->GetGrad() << std::endl;
-    
+    std::vector<double> data = {1,2,3,4,5,6};
+    std::vector<int> shape = {2,3};
+    auto tensor_ptr = Tensor::CreateTensor(data,shape);
+    Tensor& tensor = *tensor_ptr;
+    std::cout << "Size of tensor " <<tensor.GetTotalSize() << "\n";
+    std::cout << "Shape of tensor " << tensor.GetShape()[0] << ',' << tensor.GetShape()[1] << "\n";
+    std::cout << "tensor value at 1,2 " << tensor(1,2) << std::endl;
+    auto ones_tensor_ptr = Tensor::CreateOnes({4});
+    Tensor& ones_tensor = *ones_tensor_ptr;
+    std::cout << "Size of scalar tensor " <<ones_tensor.GetTotalSize() << "\n";
+    std::cout << "scalar tensor value " << ones_tensor(2,3) << std::endl;
     return 0;
 }

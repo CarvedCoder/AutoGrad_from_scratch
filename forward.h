@@ -4,7 +4,7 @@
 #include <iostream>
 #include <ostream>
 #include <string>
-#include "class.h"
+#include "node.h"
 static void forward(const std::vector<int>&order){
     for(auto n:order){ 
         auto node = Node::GetNode(n);
